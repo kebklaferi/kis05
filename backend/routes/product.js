@@ -16,6 +16,7 @@ router.get('/', (req, res) => {
 })
 /*  POST  */
 router.post('/', (req, res) => {
+    console.log(req.body)
     const {alias, title, brand_id, category_id} = req.body;
     knex("product")
         .insert({
@@ -24,7 +25,6 @@ router.post('/', (req, res) => {
             brand_id: brand_id,
             category_id: category_id,
         })
-        .returning("id")
         .then(product => {
             res.status(201).json(product);
         })
@@ -63,19 +63,17 @@ router.put('/:id', (req, res) => {
 /*  DELETE BY ID  */
 router.delete('/:id', (req, res) => {
     const productId = parseInt(req.params.id);
-    knex("products")
+    knex("product")
         .where({
             id: productId
         })
-        .del(
-            ["id", "title"]
-        )
+        .del()
         .then(delProduct => {
             if (!delProduct)
                 res.status(404).json({
                     error: "Resource not found."
                 })
-            res.status(200).json(delProduct);
+            res.status(200).json({message: "Successfully deleted product resource with id " + delProduct + "."});
             //res.status(204).send();
         })
         .catch(error => {

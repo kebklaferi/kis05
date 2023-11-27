@@ -5,9 +5,9 @@ const knex = require('../database-conection/db')
 /*  GET ALL  */
 router.get('/', (req, res) => {
     knex.select("*")
-        .from("category")
-        .then((categories) => {
-            return res.status(200).json(categories);
+        .from("brand")
+        .then((brands) => {
+            return res.status(200).json(brands);
         })
         .catch(error => {
             console.log("Database error: " + error);
@@ -18,13 +18,13 @@ router.get('/', (req, res) => {
 /*  POST  */
 router.post('/',  (req, res) => {
     const {alias, title} = req.body;
-    knex("category")
+    knex("brand")
         .insert({
             alias: alias,
             title: title,
         })
-        .then(category => {
-            res.status(201).json(category[0]);
+        .then(brand => {
+            res.status(201).json(brand[0]);
         })
         .catch(error => {
             console.log("Database error: " + error);
@@ -33,22 +33,22 @@ router.post('/',  (req, res) => {
 })
 /*  UPDATE BY ID */
 router.put('/:id', async (req, res) => {
-    const categoryId = parseInt(req.params.id);
+    const brandId = parseInt(req.params.id);
     const {alias, title} = req.body;
     try {
-        const exists = await knex("category").where({id: categoryId}).first();
+        const exists = await knex("brand").where({id: brandId}).first();
         if (!exists) {
             res.status(404).json({
                 error: "Resource not found."
             })
         } else {
-            const category = await knex("category").where({id: categoryId})
+            const brand = await knex("brand").where({id: brandId})
                 .update({
                     alias: alias,
                     title: title,
                 })
             res.status(204).send();
-           // res.status(200).json(message: "Resource with id " + category[0] + " successfully updated."});
+            // res.status(200).json(message: "Resource with id " + brand[0] + " successfully updated."});
         }
     } catch (error) {
         res.status(500).json({error: "Internal server error."});
@@ -57,19 +57,19 @@ router.put('/:id', async (req, res) => {
 })
 /*  DELETE BY ID  */
 router.delete('/:id', async (req, res) => {
-    const categoryId = parseInt(req.params.id);
+    const brandId = parseInt(req.params.id);
     try{
-        const exists = await knex("category").where({id: categoryId}).first();
+        const exists = await knex("brand").where({id: brandId}).first();
         if(!exists) {
             res.status(404).json({
                 error: "Resource not found."
             })
         } else {
-            knex("category")
-                .where({id: categoryId})
+            knex("brand")
+                .where({id: brandId})
                 .del()
-                .then(delCategory => {
-                    res.status(200).json({message: "Successfully deleted category resource with id " + delCategory + "."})
+                .then(delBrand => {
+                    res.status(200).json({message: "Successfully deleted brand resource with id " + delBrand + "."})
                 })
         }
     } catch (error) {

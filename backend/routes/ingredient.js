@@ -18,17 +18,17 @@ router.get('/', (req, res) => {
 
 /*  POST  */
 router.post('/',  (req, res) => {
-    const {alias, title, brand_id, category_id} = req.body;
+    const {alias, title, description, acne_fighting, comedogenic_rating} = req.body;
     knex("ingredient")
         .insert({
             alias: alias,
             title: title,
-            brand_id: brand_id,
-            category_id: category_id,
+            description: description,
+            acne_fighting: acne_fighting,
+            comedogenic_rating: comedogenic_rating,
         })
-        .returning("id")
         .then(ingredient => {
-            res.status(201).json(ingredient);
+            res.status(201).json(ingredient[0]);
         })
         .catch(error => {
             console.log("Database error: " + error);
@@ -38,7 +38,7 @@ router.post('/',  (req, res) => {
 /*  UPDATE BY ID  */
 router.put('/:id', async (req, res) => {
     const ingredientId = parseInt(req.params.id);
-    const {alias, title, brand_id, category_id} = req.body;
+    const {alias, title, description, acne_fighting, comedogenic_rating} = req.body;
     try {
         const exists = await knex("ingredient").where({id: ingredientId}).first();
         if (!exists) {
@@ -50,10 +50,11 @@ router.put('/:id', async (req, res) => {
                 .update({
                     alias: alias,
                     title: title,
-                    brand_id: brand_id,
-                    category_id: category_id,
+                    description: description,
+                    acne_fighting: acne_fighting,
+                    comedogenic_rating: comedogenic_rating,
                 })
-            res.status(201).send();
+            res.status(204).json({message: "Resource with id " + ingredient[0] + " successfully updated."});
             //res.status(200).json(ingredient);
         }
     } catch (error) {
@@ -75,7 +76,7 @@ router.delete('/:id', async (req, res) => {
                 .where({id: ingredientId})
                 .del(["id", "title"])
                 .then(delIngredient => {
-                    res.status(200).json(delIngredient)
+                    res.status(200).json({message: "Successfully deleted ingredient resource with id " + delIngredient + "."});
                 })
         }
     } catch (error) {
